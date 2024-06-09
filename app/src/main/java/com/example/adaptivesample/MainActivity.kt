@@ -13,7 +13,10 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.adaptivesample.ui.theme.AdaptiveSampleTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,9 +39,19 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(AppDestinations.HOME)
             }
 
+            val adaptiveInfo = currentWindowAdaptiveInfo()
+            val customNavSuiteType = with(adaptiveInfo) {
+                if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) {
+                    NavigationSuiteType.NavigationDrawer
+                } else {
+                    NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
+                }
+            }
+
             AdaptiveSampleTheme {
                 // Definition of navigation UI.
                 NavigationSuiteScaffold(
+                    layoutType = customNavSuiteType,
                     navigationSuiteItems = {
                         AppDestinations.entries.forEach {
                             this.item(
@@ -52,6 +66,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     DummyPane(text = "It is ${currentDestination.name} pane.")
+
                 }
 
             }
